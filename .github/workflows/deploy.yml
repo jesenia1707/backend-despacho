@@ -23,7 +23,7 @@ jobs:
         run: docker build -t jessy1707/backend-despacho .
 
       - name: Subir imagen Docker Hub
-        run: docker push jessy1707/backend-despacho
+        run: docker build -t jessy1707/backend-despacho ./Springboot-API-REST-DESPACHO
 
       - name: Configurar clave SSH
         run: |
