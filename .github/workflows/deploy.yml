@@ -32,7 +32,7 @@ jobs:
 
       - name: Deploy en EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
 
           sudo docker stop backend-despacho || true
           sudo docker rm backend-despacho || true
@@ -44,4 +44,3 @@ jobs:
           jessy1707/backend-despacho
 
           EOF
-        
