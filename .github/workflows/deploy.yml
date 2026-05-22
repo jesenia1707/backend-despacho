@@ -20,10 +20,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Construir imagen Docker
-        run: docker build -t jessy1707/backend-despacho .
+        run: docker build -t jessy1707/backend-despacho ./Springboot-API-REST-DESPACHO
 
       - name: Subir imagen a Docker Hub
         run: docker push jessy1707/backend-despacho
-
-        #cambios
-        
