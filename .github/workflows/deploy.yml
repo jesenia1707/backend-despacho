@@ -1,4 +1,4 @@
-name: Deploy Backend
+name: Deploy Backend AWS
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - deploy
 
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +20,27 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Construir imagen Docker
-        run: docker build -t jessy1707/backend-despacho ./Springboot-API-REST-DESPACHO
+        run: docker build -t jessy1707/backend-despacho .
 
-      - name: Subir imagen a Docker Hub
+      - name: Subir imagen Docker Hub
         run: docker push jessy1707/backend-despacho
+
+      - name: Configurar clave SSH
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      - name: Deploy en EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+
+          sudo docker stop backend-despacho || true
+          sudo docker rm backend-despacho || true
+
+          sudo docker pull jessy1707/backend-despacho
+
+          sudo docker run -d -p 8081:8081 \
+          --name backend-despacho \
+          jessy1707/backend-despacho
+
+          EOF
