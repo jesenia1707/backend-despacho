@@ -25,23 +25,17 @@ jobs:
       - name: Subir imagen Docker Hub
         run: docker push jessy1707/backend-despacho
 
-      - name: Configurar clave SSH
-        run: |
-          echo "${{ secrets.EC2_KEY }}" > key.pem
-          chmod 600 key.pem
-
       - name: Deploy en EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo docker stop backend-despacho || true
+            sudo docker rm backend-despacho || true
+            sudo docker pull jessy1707/backend-despacho
 
-          sudo docker stop backend-despacho || true
-          sudo docker rm backend-despacho || true
-
-          sudo docker pull jessy1707/backend-despacho
-
-          sudo docker run -d -p 8081:8081 \
-          --name backend-despacho \
-          jessy1707/backend-despacho
-
-          EOF
-        
+            sudo docker run -d -p 8081:8081 \
+            --name backend-despacho \
+            jessy1707/backend-despacho
